@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Online Spelling Flashcards</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="index.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -9,51 +10,31 @@
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar">
-    <h1>Online Spelling Flashcards</h1>
-    <div class="download-buttons">
-      <button id="download-csv">Download Words as CSV</button>
-      <button id="download-pdf">Download Words as PDF</button>
-    </div>
+    <h1>Generate Vocabularies</h1>
   </nav>
 
   <div class="content">
-    <div class="card">
-      <div id="type-display" class="hidden"></div>
-      <div id="word-display" class="hidden"></div>
-      <div id="definition-display" class="hidden"></div>
-    </div>
-
     <div class="controls">
-      <div class="button-row">
-        <button id="reveal-btn">Reveal</button>
-        <button id="next-btn">Next Word >></button>
-      </div>
-
-      <div class="voice-controls">
-        <select id="voice-select">
-          <option value="">Default Voice</option>
+      <div class="words-controls">
+        <select id="words-select" style="margin-bottom: 15px;">
+          <option value="v1">Version 1</option>
+          <option value="v2">Version 2</option>
         </select>
-
-        <div class="voice-tweaks">
-          <label>
-            <span>Speed:</span>
-            <input type="range" id="rate-control" min="0.5" max="2" step="0.1" value="0.8">
-            <span id="rate-value">0.8</span>
-          </label>
-
-          <label>
-            <span>Pitch:</span>
-            <input type="range" id="pitch-control" min="0.5" max="2" step="0.1" value="1">
-            <span id="pitch-value">1</span>
-          </label>
+        <div class="download-buttons">
+          <!-- <button id="download-csv">Download Words as CSV</button> -->
+          <button onclick="downloadPDF()">Download For PRINT</button>
+          <button onclick="generateForRecord()">Generate For Record</button>
         </div>
-
-        <button id="speak-btn">Speak</button>
+        <div id="text-container">
+          
+        </div>
       </div>
     </div>
   </div>
 
+  <script src="words/pronounciationMapping.js"></script>
   <script src="words/v1.js"></script>
+  <script src="words/v2.js"></script>
   <script src="index.js?1"></script>
 </body>
 </html>
