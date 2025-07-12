@@ -106,20 +106,60 @@ function toggleReveal() {
 // Speech Synthesis
 function speakWord() {
   if (!currentWord) return;
-
-  // Cancel any ongoing speech
   window.speechSynthesis.cancel();
 
-  const utterance = new SpeechSynthesisUtterance();
-  utterance.text = `${currentWord.word}. ${currentWord.type}. ${currentWord.definition}`;
-  utterance.rate = speechSettings.rate;
-  utterance.pitch = speechSettings.pitch;
+  // Process definition to add pauses
+  const processedDefinition = currentWord.definition
+    .replace(/\. /g, '. ')       // Add space after periods
+    .replace(/, /g, ', ')        // Ensure space after commas
+    .replace(/; /g, '; ');       // Ensure space after semicolons
 
-  if (speechSettings.voice) {
-    utterance.voice = speechSettings.voice;
-  }
+  // Create utterances with proper pauses
+  const wordUtterance = new SpeechSynthesisUtterance(currentWord.word);
+  const typeUtterance = new SpeechSynthesisUtterance(`(${currentWord.type})`);
+  const definitionUtterance = new SpeechSynthesisUtterance(processedDefinition);
 
-  window.speechSynthesis.speak(utterance);
+  // Configure all utterances
+  [wordUtterance, typeUtterance, definitionUtterance].forEach(utt => {
+    utt.rate = speechSettings.rate * 0.9; // Slightly slower
+    utt.pitch = speechSettings.pitch;
+    if (speechSettings.voice) utt.voice = speechSettings.voice;
+    utt.lang = 'en-US'; // Ensure English pronunciation
+  });
+
+  // Queue them with natural pauses
+  window.speechSynthesis.speak(wordUtterance);
+
+  wordUtterance.onend = () => setTimeout(() => {
+    window.speechSynthesis.speak(typeUtterance);
+
+    typeUtterance.onend = () => setTimeout(() => {
+      // Break definition into sentences if too long
+      if (processedDefinition.length > 100) {
+        speakInChunks(processedDefinition);
+      } else {
+        window.speechSynthesis.speak(definitionUtterance);
+      }
+    }, 300); // Pause after type
+  }, 200); // Pause after word
+}
+
+// Helper function for long definitions
+function speakInChunks(text) {
+  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+  let delay = 0;
+
+  sentences.forEach(sentence => {
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(sentence.trim());
+      utterance.rate = speechSettings.rate * 0.85;
+      utterance.pitch = speechSettings.pitch;
+      if (speechSettings.voice) utterance.voice = speechSettings.voice;
+      window.speechSynthesis.speak(utterance);
+    }, delay);
+
+    delay += sentence.length * 50; // Dynamic pause based on sentence length
+  });
 }
 // Add to your elements object
 elements.downloadCsv = document.getElementById('download-csv');
