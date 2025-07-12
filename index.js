@@ -121,3 +121,51 @@ function speakWord() {
 
   window.speechSynthesis.speak(utterance);
 }
+// Add to your elements object
+elements.downloadCsv = document.getElementById('download-csv');
+elements.downloadPdf = document.getElementById('download-pdf');
+
+// Add to your setupEventListeners function
+elements.downloadCsv.addEventListener('click', downloadCSV);
+elements.downloadPdf.addEventListener('click', downloadPDF);
+
+// Add these new functions
+function downloadCSV() {
+  let csv = 'Word,Type,Definition\n';
+  v1Words.forEach(word => {
+    csv += `"${word.word}","${word.type}","${word.definition.replace(/"/g, '""')}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'vocabulary-words.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.text('Vocabulary Words List', 10, 10);
+
+  let y = 20;
+  v1Words.forEach((word, i) => {
+    if (y > 280) {
+      doc.addPage();
+      y = 20;
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${i+1}. ${word.word} (${word.type})`, 10, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(word.definition, 15, y + 7);
+    y += 15;
+  });
+
+  doc.save('vocabulary-words.pdf');
+}
