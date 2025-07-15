@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs"
 import path from "path";
-import { word05 } from "./words";
+import { word06 } from "./words";
 // npx tsx testing/TTS
 // ✅ Dictionary configs
 const DICTIONARIES: Record<string, { key: string; label: string }> = {
@@ -73,16 +73,16 @@ async function fetchDefinition(word: string): Promise<void> {
 
 // ✅ Main execution
 async function run(): Promise<void> {
-    for (const word of word05) {
+    for (const word of word06) {
         await fetchDefinition(word);
     }
 
     const outputDir = "testing/generatedFiles";
     fs.mkdirSync(outputDir, { recursive: true });
 
-    fs.writeFileSync(path.join(outputDir, "word05.txt"), humanReadable);
+    fs.writeFileSync(path.join(outputDir, "word06.txt"), humanReadable);
 
-    console.log("✅ Done. Files saved: word05.json and word05.txt");
+    console.log("✅ Done. Files saved: word06.json and word06.txt");
 }
 
 run();
